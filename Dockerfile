@@ -6,7 +6,7 @@ COPY web ./web
 
 RUN cd web && npm install && npm run build
 
-FROM python:3.10.13-slim
+FROM python:3.12.7-slim
 
 WORKDIR /app
 
@@ -16,7 +16,8 @@ COPY --from=node /app/web/out ./web/out
 
 RUN apt update \
     && apt install gcc -y \
-    && python -m pip install -r requirements.txt \
+    && python -m pip install --no-cache-dir uv \
+    && uv sync \
     && touch /.dockerenv
 
-CMD [ "python", "main.py" ]
+CMD [ "uv", "run", "main.py" ]
