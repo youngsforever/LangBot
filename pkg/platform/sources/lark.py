@@ -332,7 +332,7 @@ class LarkAdapter(adapter.MessagePlatformAdapter):
     listeners: typing.Dict[
         typing.Type[platform_events.Event],
         typing.Callable[[platform_events.Event, adapter.MessagePlatformAdapter], None],
-    ] = {}
+    ]
 
     config: dict
     quart_app: quart.Quart
@@ -342,6 +342,7 @@ class LarkAdapter(adapter.MessagePlatformAdapter):
         self.config = config
         self.ap = ap
         self.quart_app = quart.Quart(__name__)
+        self.listeners = {}
 
         @self.quart_app.route('/lark/callback', methods=['POST'])
         async def lark_callback():
@@ -417,7 +418,7 @@ class LarkAdapter(adapter.MessagePlatformAdapter):
         lark_message = await self.message_converter.yiri2target(message, self.api_client)
 
         final_content = {
-            'zh_cn': {
+            'zh_Hans': {
                 'title': '',
                 'content': lark_message,
             },

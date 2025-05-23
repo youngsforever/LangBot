@@ -93,6 +93,7 @@ class DifyServiceAPIRunner(runner.RequestRunner):
     async def _chat_messages(self, query: core_entities.Query) -> typing.AsyncGenerator[llm_entities.Message, None]:
         """调用聊天助手"""
         cov_id = query.session.using_conversation.uuid or ''
+        query.variables['conversation_id'] = cov_id
 
         plain_text, image_ids = await self._preprocess_user_message(query)
 
@@ -121,7 +122,7 @@ class DifyServiceAPIRunner(runner.RequestRunner):
             user=f'{query.session.launcher_type.value}_{query.session.launcher_id}',
             conversation_id=cov_id,
             files=files,
-            timeout=self.pipeline_config['ai']['dify-service-api']['timeout'],
+            timeout=120,
         ):
             self.ap.logger.debug('dify-chat-chunk: ' + str(chunk))
 
@@ -155,6 +156,7 @@ class DifyServiceAPIRunner(runner.RequestRunner):
     ) -> typing.AsyncGenerator[llm_entities.Message, None]:
         """调用聊天助手"""
         cov_id = query.session.using_conversation.uuid or ''
+        query.variables['conversation_id'] = cov_id
 
         plain_text, image_ids = await self._preprocess_user_message(query)
 
@@ -184,7 +186,7 @@ class DifyServiceAPIRunner(runner.RequestRunner):
             response_mode='streaming',
             conversation_id=cov_id,
             files=files,
-            timeout=self.pipeline_config['ai']['dify-service-api']['timeout'],
+            timeout=120,
         ):
             self.ap.logger.debug('dify-agent-chunk: ' + str(chunk))
 
@@ -276,7 +278,7 @@ class DifyServiceAPIRunner(runner.RequestRunner):
             inputs=inputs,
             user=f'{query.session.launcher_type.value}_{query.session.launcher_id}',
             files=files,
-            timeout=self.pipeline_config['ai']['dify-service-api']['timeout'],
+            timeout=120,
         ):
             self.ap.logger.debug('dify-workflow-chunk: ' + str(chunk))
             if chunk['event'] in ignored_events:
